@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "notflix"
-version = "0.1.0"
+name = "notflix-rs"
+version = "0.1.1"

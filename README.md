@@ -3,8 +3,10 @@
 
 ### How does this work?
 
-Opens `Firefox` 🔥🦊, user chose the desired option from a list, then copies the 🧲 link,
-After this it uses `btplay (btfs)` to stream the video with `mpv`.
+Opens `Firefox` 🔥🦊,
+user chose the desired option from a list,
+then copies the 🧲 link,
+after this it uses `btplay (btfs)` to stream the video with `mpv`.
 
 ## Requirements
 
@@ -12,6 +14,12 @@ After this it uses `btplay (btfs)` to stream the video with `mpv`.
 * `btfs` - A tool to stream torrent.
 * `mpv` - Video player.
 
-## License
-This project is licensed under [GPL-3.0](https://raw.githubusercontent.com/Illumina/licenses/master/gpl-3.0.txt).
+## Usage
 
+`notflix-rs <film name or magnet link>`
+
+The argument is optional.
+
+## License
+
+This project is licensed under [GPL-3.0](https://raw.githubusercontent.com/Illumina/licenses/master/gpl-3.0.txt).
