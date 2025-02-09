@@ -16,7 +16,7 @@ after this it uses `btplay (btfs)` to stream the video with `mpv`.
 
 ## Usage
 
-`notflix-rs <film name or magnet link>`
+`notflix-rs <film name or magnet link>` or `anime-rs <anime name or magnet link>`
 
 The argument is optional.
 
