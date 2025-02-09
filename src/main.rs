@@ -13,23 +13,33 @@ use std::{
 
 const FILM_SITE: &str = "https://thepiratebay.org/search.php?q=«search_str»";
 const SUBTITLE_SITE: &str = "https://www.opensubtitles.com/en/en/search-all/q-«search_str»/hearing_impaired-include/machine_translated-/trusted_sources-";
+const ANIME_SITE: &str = "https://nyaa.si/?f=0&c=0_0&q=«search_str»";
 
 #[derive(PartialEq)]
 enum State {
-    GetFilmName,
-    GetMagnetLink(String),
+    GetFilmName(Runner),
+    GetMagnetLink(String, Runner),
     Play(String),
+}
+
+#[derive(PartialEq)]
+enum Runner {
+    Film,
+    Anime,
 }
 
 fn main() {
     let mut state = process_arguments();
     loop {
         match state {
-            State::GetFilmName => {
-                state = State::GetMagnetLink(get_film_name());
+            State::GetFilmName(runner) => {
+                state = State::GetMagnetLink(get_film_name(), runner);
             }
-            State::GetMagnetLink(ref film_name) => {
-                show_list(film_name);
+            State::GetMagnetLink(ref title, runner) => {
+                match runner {
+                    Runner::Film => show_film_list(title),
+                    Runner::Anime => show_anime_list(title),
+                }
                 state = State::Play(get_magnet_link());
             }
             State::Play(ref magnet_link) => {
@@ -41,16 +51,22 @@ fn main() {
 }
 
 fn process_arguments() -> State {
-    let arg = env::args().nth(1);
-    if let Some(arg) = arg {
-        if arg.starts_with("magnet:") {
-            return State::Play(arg);
-        } else {
-            return State::GetMagnetLink(arg);
+    let mut args = env::args();
+    let mut runner = Runner::Film;
+    if let Some(runner_str) = args.next() {
+        if runner_str.starts_with("anime") {
+            runner = Runner::Anime;
         }
     }
-    println!("✨ Usage: notflix-rs <optional film name or magnet link>\n");
-    State::GetFilmName
+    if let Some(title_or_magnet) = args.next() {
+        if title_or_magnet.starts_with("magnet:") {
+            return State::Play(title_or_magnet);
+        } else {
+            return State::GetMagnetLink(title_or_magnet, runner);
+        }
+    }
+    println!("✨ Usage: notflix-rs <optional film name or magnet link>\n          anime-rs <optional anime name or magnet link>\n");
+    State::GetFilmName(runner)
 }
 
 fn get_film_name() -> String {
@@ -62,7 +78,7 @@ fn get_film_name() -> String {
     film_name
 }
 
-fn show_list(film_name: &str) {
+fn show_film_list(film_name: &str) {
     println!("Opening Firefox... 🔥🦊");
     let url_film_name = film_name.replace('\n', "").replace(' ', "+");
     // FILM
@@ -84,6 +100,19 @@ fn show_list(film_name: &str) {
         .stdout(Stdio::null())
         .spawn()
         .expect("firefox search subtitle");
+}
+
+fn show_anime_list(anime_name: &str) {
+    println!("Opening Firefox... 🔥🦊");
+    let url_anime_name = anime_name.replace('\n', "").replace(' ', "+");
+    // FILM
+    let search_string_anime_site = ANIME_SITE.replace("«search_str»", &url_anime_name);
+    println!("👉 firefox {}", &search_string_anime_site);
+    Command::new("firefox")
+        .arg(&search_string_anime_site)
+        .stdout(Stdio::null())
+        .spawn()
+        .expect("firefox search anime");
 }
 
 fn get_magnet_link() -> String {
